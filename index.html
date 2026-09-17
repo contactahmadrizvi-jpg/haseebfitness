@@ -404,19 +404,15 @@
     <div id="app-container" class="w-full sm:max-w-md glass-ultra sm:rounded-3xl sm:shadow-2xl overflow-hidden min-h-screen sm:min-h-[90vh] flex flex-col relative border border-white/10">
         <!-- Loading state -->
         <div class="flex items-center justify-center min-h-screen">
-            <div class="text-center space-y-4">
+            <div class="text-center space-y-6">
                 <div class="w-16 h-16 gradient-ultra text-white rounded-3xl flex items-center justify-center mx-auto shadow-xl">
                     <span class="text-2xl font-bold">HF</span>
                 </div>
-                <div class="space-y-2">
-                    <div class="w-12 h-12 mx-auto">
-                        <svg class="w-12 h-12 text-purple-400 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </div>
-                    <p class="text-sm text-white/80 font-medium">⚡ Initializing Ultra System...</p>
+                <div class="relative inline-flex">
+                    <div class="w-14 h-14 rounded-full border-4 border-white/10"></div>
+                    <div class="w-14 h-14 rounded-full border-4 border-transparent border-t-purple-500 border-r-purple-500 animate-spin absolute top-0 left-0"></div>
                 </div>
+                <p class="text-base text-white/90 font-medium">Initializing System...</p>
             </div>
         </div>
     </div>
@@ -696,15 +692,13 @@
                     <div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-2xl hidden backdrop-blur-sm border border-white/20"></div>
 
                     <!-- Loading Overlay -->
-                    <div id="loading-overlay" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center">
-                        <div class="glass-ultra rounded-3xl p-8 text-center max-w-sm mx-4 border border-white/10">
-                            <div class="w-16 h-16 mx-auto mb-4">
-                                <svg class="w-16 h-16 text-purple-400 animate-spin" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
+                    <div id="loading-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center">
+                        <div class="text-center">
+                            <div class="relative inline-flex">
+                                <div class="w-20 h-20 rounded-full border-4 border-white/10"></div>
+                                <div class="w-20 h-20 rounded-full border-4 border-transparent border-t-purple-500 border-r-purple-500 animate-spin absolute top-0 left-0"></div>
                             </div>
-                            <p id="loading-text" class="text-white font-semibold text-sm">Loading...</p>
+                            <p id="loading-text" class="text-white font-semibold text-base mt-6">Loading...</p>
                         </div>
                     </div>
 
