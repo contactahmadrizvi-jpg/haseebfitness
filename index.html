@@ -503,11 +503,14 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const btn = document.getElementById('login-btn');
+            const loginText = document.getElementById('login-text');
+            const loginSpinner = document.getElementById('login-spinner');
             const errorMsg = document.getElementById('error-msg');
             const successMsg = document.getElementById('success-msg');
             
             btn.disabled = true;
-            btn.textContent = 'Signing in...';
+            loginText.classList.add('hidden');
+            loginSpinner.classList.remove('hidden');
             errorMsg.classList.add('hidden');
             successMsg.classList.add('hidden');
             
@@ -538,7 +541,8 @@
                 errorMsg.classList.remove('hidden');
                 
                 btn.disabled = false;
-                btn.textContent = 'Sign In';
+                loginText.classList.remove('hidden');
+                loginSpinner.classList.add('hidden');
             }
         }
         
@@ -691,6 +695,19 @@
 
                     <div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-2xl hidden backdrop-blur-sm border border-white/20"></div>
 
+                    <!-- Loading Overlay -->
+                    <div id="loading-overlay" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center">
+                        <div class="glass-ultra rounded-3xl p-8 text-center max-w-sm mx-4 border border-white/10">
+                            <div class="w-16 h-16 mx-auto mb-4">
+                                <svg class="w-16 h-16 text-purple-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <p id="loading-text" class="text-white font-semibold text-sm">Loading...</p>
+                        </div>
+                    </div>
+
                 </div>
             `;
             
@@ -707,9 +724,31 @@
         let currentTab = 'all';
         let searchQuery = '';
         let deleteTargetId = null;
+        let isLoading = false;
+        
+        // Show loading overlay
+        function showLoading(message = 'Loading...') {
+            const overlay = document.getElementById('loading-overlay');
+            const loadingText = document.getElementById('loading-text');
+            if (overlay && loadingText) {
+                loadingText.textContent = message;
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+            }
+        }
+        
+        // Hide loading overlay
+        function hideLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+            }
+        }
         
         // Load members from Firestore
         function loadMembers() {
+            showLoading('Loading members...');
             db.collection('members').orderBy('joiningDate', 'desc').onSnapshot((snapshot) => {
                 members = [];
                 snapshot.forEach((doc) => {
@@ -717,9 +756,11 @@
                 });
                 updateStats();
                 renderMembers();
+                hideLoading();
             }, (error) => {
                 console.error('Error loading members:', error);
                 showToast('Error loading members', 'error');
+                hideLoading();
             });
         }
         
@@ -763,6 +804,41 @@
         function renderMembers() {
             const filtered = getFilteredMembers();
             const container = document.getElementById('member-list');
+            
+            if (filtered.length === 0 && members.length === 0) {
+                // Show skeleton loaders while loading
+                container.innerHTML = `
+                    <div class="space-y-3">
+                        ${[1,2,3].map(() => `
+                            <div class="ultra-card p-4 space-y-3">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center space-x-3 flex-1">
+                                        <div class="w-11 h-11 rounded-xl bg-white/10 skeleton"></div>
+                                        <div class="flex-1 space-y-2">
+                                            <div class="h-4 bg-white/10 rounded skeleton w-32"></div>
+                                            <div class="h-3 bg-white/10 rounded skeleton w-24"></div>
+                                        </div>
+                                    </div>
+                                    <div class="w-16 h-6 bg-white/10 rounded-full skeleton"></div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 glass-card p-3 rounded-xl">
+                                    <div class="h-8 bg-white/10 rounded skeleton"></div>
+                                    <div class="h-8 bg-white/10 rounded skeleton"></div>
+                                    <div class="h-8 bg-white/10 rounded skeleton"></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex space-x-2">
+                                        <div class="h-8 w-16 bg-white/10 rounded-xl skeleton"></div>
+                                        <div class="h-8 w-16 bg-white/10 rounded-xl skeleton"></div>
+                                    </div>
+                                    <div class="h-8 w-24 bg-white/10 rounded-xl skeleton"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                return;
+            }
             
             if (filtered.length === 0) {
                 container.innerHTML = `
@@ -921,6 +997,9 @@
         async function saveMember(e) {
             e.preventDefault();
             
+            if (isLoading) return;
+            isLoading = true;
+            
             const id = document.getElementById('memberId').value;
             const name = document.getElementById('memberName').value.trim();
             const fatherName = document.getElementById('memberFatherName').value.trim();
@@ -945,26 +1024,36 @@
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
             
+            showLoading(id ? 'Updating member...' : 'Adding member...');
+            
             try {
                 if (id) {
                     await db.collection('members').doc(id).update(memberData);
-                    showToast('Member updated!', 'success');
+                    showToast('✅ Member updated!', 'success');
                 } else {
                     memberData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                     await db.collection('members').add(memberData);
-                    showToast('Member added!', 'success');
+                    showToast('✅ Member added!', 'success');
                 }
                 closeModal();
             } catch (error) {
                 console.error('Error saving member:', error);
-                showToast('Error saving member', 'error');
+                showToast('❌ Error saving member', 'error');
+            } finally {
+                hideLoading();
+                isLoading = false;
             }
         }
         
         // Mark as paid
         async function markAsPaid(id) {
+            if (isLoading) return;
+            isLoading = true;
+            
             const todayStr = new Date().toISOString().split('T')[0];
             const nextDueDate = calculateNextMonth(todayStr);
+            
+            showLoading('Updating payment...');
             
             try {
                 await db.collection('members').doc(id).update({
@@ -973,10 +1062,13 @@
                     nextDueDate: nextDueDate,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                showToast('Payment recorded!', 'success');
+                showToast('✅ Payment recorded!', 'success');
             } catch (error) {
                 console.error('Error marking as paid:', error);
-                showToast('Error updating payment', 'error');
+                showToast('❌ Error updating payment', 'error');
+            } finally {
+                hideLoading();
+                isLoading = false;
             }
         }
         
@@ -997,13 +1089,21 @@
         
         // Confirm delete
         async function confirmDelete(id) {
+            if (isLoading) return;
+            isLoading = true;
+            
+            showLoading('Deleting member...');
+            
             try {
                 await db.collection('members').doc(id).delete();
-                showToast('Member deleted', 'info');
+                showToast('🗑️ Member deleted', 'info');
                 closeConfirmModal();
             } catch (error) {
                 console.error('Error deleting member:', error);
-                showToast('Error deleting member', 'error');
+                showToast('❌ Error deleting member', 'error');
+            } finally {
+                hideLoading();
+                isLoading = false;
             }
         }
         
