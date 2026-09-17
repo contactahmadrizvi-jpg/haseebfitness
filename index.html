@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haseeb Fitness CRM & Cashier - Secure Admin Portal</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Security Meta Tags -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230f172a'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white' font-family='Inter, sans-serif' font-weight='bold'>HF</text></svg>">
+    
+    <!-- Firebase SDK v9 (compat mode for easier migration) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase Configuration - SECURE VERSION
+        // NOTE: For Vercel deployment, set these as environment variables in Vercel dashboard
+        const firebaseConfig = {
+            apiKey: "%VITE_FIREBASE_API_KEY%",
+            authDomain: "%VITE_FIREBASE_AUTH_DOMAIN%",
+            projectId: "%VITE_FIREBASE_PROJECT_ID%",
+            storageBucket: "%VITE_FIREBASE_STORAGE_BUCKET%",
+            messagingSenderId: "%VITE_FIREBASE_MESSAGING_SENDER_ID%",
+            appId: "%VITE_FIREBASE_APP_ID%"
+        };
+        
+        // Validate configuration
+        if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes('%')) {
+            console.error('❌ Firebase configuration not loaded. Please set environment variables.');
+            document.getElementById('app-container').innerHTML = `
+                <div class="flex items-center justify-center min-h-screen p-6">
+                    <div class="glass-ultra rounded-3xl p-8 max-w-md text-center">
+                        <div class="w-16 h-16 gradient-danger rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Configuration Error</h3>
+                        <p class="text-sm text-white/70">Firebase environment variables are not set. Please configure them in your deployment platform.</p>
+                    </div>
+                </div>
+            `;
+            throw new Error('Firebase configuration missing');
+        }
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        console.log('✅ Firebase initialized securely');
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(102, 126, 234, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(118, 75, 162, 0.15) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(0, 0, 0, 0.8) 0px, transparent 50%);
+            -webkit-tap-highlight-color: transparent;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        /* Ultra Premium Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+        
+        /* Dark Glassmorphism */
+        .glass-ultra {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 8px 32px 0 rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Ultra Premium Gradients */
+        .gradient-ultra {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .gradient-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+        }
+        
+        .gradient-danger {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            box-shadow: 0 10px 30px rgba(238, 9, 121, 0.4);
+        }
+        
+        .gradient-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.4);
+        }
+        
+        .gradient-gold {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            box-shadow: 0 10px 30px rgba(247, 151, 30, 0.4);
+        }
+        
+        /* Premium Text Gradients */
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Advanced Animations */
+        @keyframes slideUp {
+            from { 
+                transform: translateY(100%); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+        
+        @keyframes glow {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(102, 126, 234, 0.5),
+                           0 0 60px rgba(118, 75, 162, 0.3); 
+            }
+            50% { 
+                box-shadow: 0 0 50px rgba(102, 126, 234, 0.8),
+                           0 0 100px rgba(118, 75, 162, 0.5); 
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .animate-slide-up {
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        
+        .animate-pulse {
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .animate-glow {
+            animation: glow 3s ease-in-out infinite;
+        }
+        
+        .animate-slide-left {
+            animation: slideInLeft 0.5s ease-out forwards;
+        }
+        
+        .animate-slide-right {
+            animation: slideInRight 0.5s ease-out forwards;
+        }
+        
+        /* Shimmer Effect */
+        .shimmer {
+            background: linear-gradient(
+                90deg,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.1) 50%,
+                rgba(255,255,255,0) 100%
+            );
+            background-size: 1000px 100%;
+            animation: shimmer 3s infinite;
+        }
+        
+        /* Premium Hover Effects */
+        .hover-scale {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hover-glow:hover {
+            box-shadow: 
+                0 0 30px rgba(102, 126, 234, 0.6),
+                0 0 60px rgba(118, 75, 162, 0.4),
+                0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Button Ripple Effect */
+        .btn-ripple {
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(0);
+        }
+        
+        .btn-ripple::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-ripple:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* Premium Card */
+        .ultra-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .ultra-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.6),
+                0 0 40px rgba(102, 126, 234, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Clean Text - No Neon */
+        .clean-text {
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Premium Input Styles */
+        input, select, textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 
+                0 0 0 4px rgba(102, 126, 234, 0.1),
+                0 0 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Status Badge Glow */
+        .badge-glow-paid {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            box-shadow: 
+                0 0 20px rgba(56, 239, 125, 0.5),
+                0 4px 15px rgba(17, 153, 142, 0.3);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        .badge-glow-unpaid {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            box-shadow: 
+                0 0 20px rgba(238, 9, 121, 0.5),
+                0 4px 15px rgba(255, 106, 0, 0.3);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        /* Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.03) 0%,
+                rgba(255, 255, 255, 0.08) 50%,
+                rgba(255, 255, 255, 0.03) 100%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 640px) {
+            body {
+                background-attachment: fixed;
+            }
+            
+            .ultra-card {
+                border-radius: 20px;
+            }
+            
+            .glass-ultra {
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+            }
+        }
+        
+        /* Scrollbar for mobile webkit */
+        @supports (-webkit-touch-callout: none) {
+            ::-webkit-scrollbar {
+                width: 4px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex justify-center items-start sm:py-8">
+
+    <!-- App Container: Firebase auth modules will inject content here -->
+    <div id="app-container" class="w-full sm:max-w-md glass-ultra sm:rounded-3xl sm:shadow-2xl overflow-hidden min-h-screen sm:min-h-[90vh] flex flex-col relative border border-white/10">
+        <!-- Loading state -->
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="text-center space-y-4">
+                <div class="w-16 h-16 gradient-ultra text-white rounded-3xl flex items-center justify-center mx-auto shadow-2xl animate-glow">
+                    <span class="text-2xl font-bold">HF</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="w-12 h-12 mx-auto">
+                        <svg class="w-12 h-12 text-purple-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm text-white/80 font-medium">⚡ Initializing Ultra System...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Firebase Auth Script -->
+    <script>
+        let currentUser = null;
+        
+        // Check auth state
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            if (user) {
+                console.log('✅ Logged in:', user.email);
+                showDashboard();
+            } else {
+                showLoginPage();
+            }
+        });
+        
+        // Show login page
+        function showLoginPage() {
+            document.getElementById('app-container').innerHTML = `
+                <div class="flex items-center justify-center min-h-screen p-6 animate-fade-in">
+                    <div class="w-full max-w-md">
+                        <div class="glass-ultra rounded-3xl shadow-2xl overflow-hidden animate-float">
+                            <div class="gradient-ultra px-8 py-10 text-center relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-full opacity-20">
+                                    <div class="shimmer w-full h-full"></div>
+                                </div>
+                                <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg animate-glow relative z-10">
+                                    <span class="text-4xl font-bold text-white">HF</span>
+                                </div>
+                                <h1 class="text-3xl font-bold text-white mb-2 relative z-10">Haseeb Fitness</h1>
+                                <p class="text-white/80 text-sm relative z-10">Ultra Premium CRM System</p>
+                            </div>
+                            
+                            <div class="p-8 glass-card">
+                                <div id="error-msg" class="hidden mb-4 p-3 gradient-danger rounded-xl text-white text-sm backdrop-blur-sm animate-slide-up"></div>
+                                <div id="success-msg" class="hidden mb-4 p-3 gradient-success rounded-xl text-white text-sm backdrop-blur-sm animate-slide-up"></div>
+                                
+                                <form onsubmit="handleLogin(event)" class="space-y-4">
+                                    <div class="group">
+                                        <label class="block text-xs font-semibold text-white/90 uppercase mb-2 group-focus-within:text-white transition">Email</label>
+                                        <input type="email" id="email" required placeholder="admin@haseebfitness.com"
+                                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                    </div>
+                                    
+                                    <div class="group">
+                                        <label class="block text-xs font-semibold text-white/90 uppercase mb-2 group-focus-within:text-white transition">Password</label>
+                                        <input type="password" id="password" required placeholder="••••••••"
+                                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                    </div>
+                                    
+                                    <button type="submit" id="login-btn"
+                                        class="w-full py-4 gradient-ultra text-white rounded-2xl font-bold transition mt-6 btn-ripple shadow-2xl hover-scale animate-glow">
+                                        <span id="login-text">🔐 Sign In Securely</span>
+                                        <span id="login-spinner" class="hidden">⏳ Authenticating...</span>
+                                    </button>
+                                </form>
+                                
+                                <div class="mt-6 p-4 bg-blue-500/10 border border-blue-400/20 rounded-xl text-xs text-blue-200 backdrop-blur-sm">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span><strong>ℹ️ Admin Access:</strong> New users must be added via Firebase Console</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-6 text-white/50 text-xs animate-fade-in">
+                            🔒 Protected by Firebase Authentication
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Handle login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('login-btn');
+            const errorMsg = document.getElementById('error-msg');
+            const successMsg = document.getElementById('success-msg');
+            
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+            errorMsg.classList.add('hidden');
+            successMsg.classList.add('hidden');
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                successMsg.textContent = '✅ Login successful! Redirecting...';
+                successMsg.classList.remove('hidden');
+                // Auth state listener will redirect to dashboard
+            } catch (error) {
+                console.error('Login error:', error);
+                let msg = '';
+                
+                if (error.code === 'auth/user-not-found') {
+                    msg = '❌ User not found! Ask admin to add your account in Firebase Console.';
+                } else if (error.code === 'auth/wrong-password') {
+                    msg = '❌ Wrong password! Please try again.';
+                } else if (error.code === 'auth/invalid-email') {
+                    msg = '❌ Invalid email format.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    msg = '❌ Too many failed attempts! Try again later.';
+                } else if (error.code === 'auth/network-request-failed') {
+                    msg = '❌ Network error! Check your internet connection.';
+                } else {
+                    msg = '❌ Login failed: ' + error.message;
+                }
+                
+                errorMsg.textContent = msg;
+                errorMsg.classList.remove('hidden');
+                
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            }
+        }
+        
+        // Show dashboard
+        function showDashboard() {
+            loadMembers(); // Load members from Firestore
+            document.getElementById('app-container').innerHTML = `
+                <div class="w-full sm:max-w-md glass-ultra sm:rounded-3xl sm:shadow-2xl overflow-hidden min-h-screen sm:min-h-[90vh] flex flex-col relative animate-fade-in border border-white/10">
+
+                    <header class="glass-card border-b border-white/10 px-5 py-4 sticky top-0 z-20 backdrop-blur-xl">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-2xl gradient-ultra flex items-center justify-center font-bold text-lg shadow-xl animate-glow">
+                                    <span class="text-white">HF</span>
+                                </div>
+                                <div>
+                                    <h1 class="font-bold text-lg text-white leading-tight">Haseeb Fitness</h1>
+                                    <p class="text-xs text-purple-300 font-medium">Ultra Premium CRM</p>
+                                </div>
+                            </div>
+                            <button onclick="handleLogout()" title="Logout" class="p-2.5 rounded-xl gradient-danger hover:shadow-lg transition active:scale-95 btn-ripple">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                            </button>
+                        </div>
+                    </header>
+
+                    <section class="px-5 py-4 border-b border-white/10">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="ultra-card p-4 hover-scale">
+                                <span class="text-[11px] font-bold text-purple-300 uppercase tracking-wider">💰 Collection</span>
+                                <div class="flex items-baseline mt-1.5">
+                                    <span id="stat-collection" class="text-2xl font-bold text-gradient">₨0</span>
+                                </div>
+                            </div>
+                            <div class="ultra-card p-4 hover-scale">
+                                <span class="text-[11px] font-bold text-purple-300 uppercase tracking-wider">👥 Members</span>
+                                <div class="flex flex-col mt-1.5 space-y-1">
+                                    <div class="flex items-baseline">
+                                        <span id="stat-total" class="text-xl font-bold text-white">0</span>
+                                        <span class="text-xs text-white/50 ml-1">Total</span>
+                                    </div>
+                                    <div class="flex space-x-2 text-xs font-medium">
+                                        <span class="text-emerald-300"><strong id="stat-paid">0</strong> Paid</span>
+                                        <span class="text-rose-300"><strong id="stat-unpaid">0</strong> Due</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="px-5 py-4 glass-card border-b border-white/10 space-y-4">
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-white/40 group-focus-within:text-purple-400 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </div>
+                            <input type="text" id="searchInput" placeholder="🔍 Search by name..." 
+                                oninput="filterMembers(this.value)"
+                                class="w-full pl-10 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                        </div>
+                        
+                        <div class="flex p-1 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
+                            <button onclick="filterTab('all')" id="tab-all" class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition gradient-ultra text-white shadow-lg">
+                                All (<span id="count-all">0</span>)
+                            </button>
+                            <button onclick="filterTab('paid')" id="tab-paid" class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition text-white/60 hover:text-white hover:bg-white/10">
+                                ✓ Paid (<span id="count-paid">0</span>)
+                            </button>
+                            <button onclick="filterTab('unpaid')" id="tab-unpaid" class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition text-white/60 hover:text-white hover:bg-white/10">
+                                ⏰ Due (<span id="count-unpaid">0</span>)
+                            </button>
+                        </div>
+                    </section>
+
+                    <main class="flex-1 px-5 py-4 overflow-y-auto space-y-3 pb-24" id="member-list"></main>
+
+                    <div class="absolute bottom-5 right-5 z-10 animate-float">
+                        <button onclick="openAddModal()" class="flex items-center space-x-2 gradient-ultra text-white px-5 py-3.5 rounded-2xl shadow-2xl font-semibold text-sm hover:shadow-[0_0_50px_rgba(102,126,234,0.8)] active:scale-95 transition btn-ripple animate-glow">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                            <span>Add Member</span>
+                        </button>
+                    </div>
+
+                    <!-- Add/Edit Modal -->
+                    <div id="memberModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-end sm:items-center justify-center animate-fade-in">
+                        <div class="glass-ultra w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-slide-up border border-white/10">
+                            <div class="gradient-ultra px-6 py-4 flex items-center justify-between">
+                                <h3 id="modalTitle" class="font-bold text-lg text-white">Add Member</h3>
+                                <button onclick="closeModal()" class="p-2 text-white/80 hover:text-white rounded-xl hover:bg-white/20 transition btn-ripple">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                            <form onsubmit="saveMember(event)" class="p-6 space-y-4 overflow-y-auto glass-card backdrop-blur-xl">
+                                <input type="hidden" id="memberId">
+                                <div>
+                                    <label class="block text-xs font-semibold text-white/90 uppercase mb-1">Full Name *</label>
+                                    <input type="text" id="memberName" required placeholder="e.g. Ali Ahmad"
+                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-white/90 uppercase mb-1">Father Name *</label>
+                                    <input type="text" id="memberFatherName" required placeholder="e.g. Ahmad Khan"
+                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-white/90 uppercase mb-1">📱 WhatsApp Number</label>
+                                    <input type="tel" id="memberWhatsApp" placeholder="e.g. 03001234567"
+                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                    <p class="text-xs text-white/50 mt-1">Optional - For payment reminders</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-white/90 uppercase mb-1">Joining Date *</label>
+                                    <input type="date" id="memberJoiningDate" required
+                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-white/90 uppercase mb-1">💰 Monthly Fee (PKR) *</label>
+                                    <input type="number" id="memberFee" required min="1" placeholder="1500" value="1500"
+                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-white/90 uppercase mb-1">Status</label>
+                                    <select id="memberStatus" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                        <option value="paid" class="bg-gray-900">✓ Paid</option>
+                                        <option value="unpaid" class="bg-gray-900">⏰ Unpaid</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="w-full py-3.5 gradient-ultra text-white rounded-2xl font-bold hover:shadow-2xl transition btn-ripple animate-glow">
+                                    💾 Save Member
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Delete Confirm Modal -->
+                    <div id="confirmModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 animate-fade-in">
+                        <div class="glass-ultra max-w-sm rounded-3xl shadow-2xl p-6 space-y-4 text-center animate-slide-up border border-white/10">
+                            <div class="w-12 h-12 gradient-danger rounded-2xl flex items-center justify-center mx-auto animate-pulse">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-white">Delete Member?</h3>
+                                <p class="text-xs text-white/60 mt-1">⚠️ This action cannot be undone!</p>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button onclick="closeConfirmModal()" class="flex-1 py-3 bg-white/10 text-white rounded-2xl font-semibold text-sm hover:bg-white/20 transition backdrop-blur-sm hover-scale">Cancel</button>
+                                <button id="confirmDeleteBtn" class="flex-1 py-3 gradient-danger text-white rounded-2xl font-semibold text-sm hover:shadow-2xl transition btn-ripple">🗑️ Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-2xl hidden backdrop-blur-sm border border-white/20"></div>
+
+                </div>
+            `;
+            
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            setTimeout(() => {
+                const dateInput = document.getElementById('memberJoiningDate');
+                if (dateInput) dateInput.value = today;
+            }, 100);
+        }
+        
+        // CRM System Functions
+        let members = [];
+        let currentTab = 'all';
+        let searchQuery = '';
+        let deleteTargetId = null;
+        
+        // Load members from Firestore
+        function loadMembers() {
+            db.collection('members').orderBy('joiningDate', 'desc').onSnapshot((snapshot) => {
+                members = [];
+                snapshot.forEach((doc) => {
+                    members.push({ id: doc.id, ...doc.data() });
+                });
+                updateStats();
+                renderMembers();
+            }, (error) => {
+                console.error('Error loading members:', error);
+                showToast('Error loading members', 'error');
+            });
+        }
+        
+        // Calculate next month date
+        function calculateNextMonth(dateStr) {
+            const date = new Date(dateStr);
+            date.setMonth(date.getMonth() + 1);
+            return date.toISOString().split('T')[0];
+        }
+        
+        // Update stats
+        function updateStats() {
+            const total = members.length;
+            const paid = members.filter(m => m.status === 'paid').length;
+            const unpaid = total - paid;
+            const collection = members.filter(m => m.status === 'paid').reduce((sum, m) => sum + Number(m.monthlyFee), 0);
+            
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-paid').textContent = paid;
+            document.getElementById('stat-unpaid').textContent = unpaid;
+            document.getElementById('stat-collection').textContent = '₨' + collection.toLocaleString();
+            document.getElementById('count-all').textContent = total;
+            document.getElementById('count-paid').textContent = paid;
+            document.getElementById('count-unpaid').textContent = unpaid;
+        }
+        
+        // Filter members
+        function getFilteredMembers() {
+            return members.filter(m => {
+                if (currentTab === 'paid' && m.status !== 'paid') return false;
+                if (currentTab === 'unpaid' && m.status !== 'unpaid') return false;
+                if (searchQuery) {
+                    const q = searchQuery.toLowerCase();
+                    if (!m.name.toLowerCase().includes(q) && !m.fatherName.toLowerCase().includes(q)) return false;
+                }
+                return true;
+            });
+        }
+        
+        // Render members list
+        function renderMembers() {
+            const filtered = getFilteredMembers();
+            const container = document.getElementById('member-list');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="py-16 text-center animate-fade-in">
+                        <div class="w-16 h-16 glass-card rounded-3xl text-white/60 flex items-center justify-center mx-auto mb-4 animate-float">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                        <h4 class="font-bold text-white text-lg">No members found</h4>
+                        <p class="text-xs text-white/60 mt-1">Add your first member to get started 🚀</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filtered.map(m => {
+                const isPaid = m.status === 'paid';
+                const initials = m.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                
+                // Check if reminder should be shown
+                const showReminder = !isPaid && m.whatsApp;
+                
+                // Calculate days overdue
+                let daysOverdue = 0;
+                if (!isPaid && m.nextDueDate) {
+                    const today = new Date();
+                    const dueDate = new Date(m.nextDueDate);
+                    daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                }
+                
+                return `
+                    <div class="ultra-card p-4 space-y-3 hover-scale animate-fade-in">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-11 h-11 rounded-xl gradient-ultra flex items-center justify-center text-sm text-white font-bold shadow-xl animate-glow">
+                                    ${initials}
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white text-base">${m.name}</h3>
+                                    <p class="text-[11px] text-white/60">S/O: ${m.fatherName}</p>
+                                    ${m.whatsApp ? `<p class="text-[10px] text-purple-300">📱 ${m.whatsApp}</p>` : ''}
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase ${isPaid ? 'badge-glow-paid text-white' : 'badge-glow-unpaid text-white'}">
+                                ${isPaid ? '✓ Paid' : daysOverdue > 0 ? `${daysOverdue}d Overdue` : '⏰ Due'}
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2 glass-card p-3 rounded-xl text-xs border border-white/10">
+                            <div>
+                                <span class="text-purple-300 block text-[9px] uppercase font-bold">💰 Fee</span>
+                                <span class="font-bold text-white">₨${Number(m.monthlyFee).toLocaleString()}</span>
+                            </div>
+                            <div>
+                                <span class="text-purple-300 block text-[9px] uppercase font-bold">📅 Joined</span>
+                                <span class="font-semibold text-white/80">${m.joiningDate}</span>
+                            </div>
+                            <div>
+                                <span class="text-purple-300 block text-[9px] uppercase font-bold">⏰ Next Due</span>
+                                <span class="font-semibold ${isPaid ? 'text-white/80' : 'text-rose-300'}">${m.nextDueDate || 'N/A'}</span>
+                            </div>
+                        </div>
+                        
+                        ${showReminder ? `
+                            <div class="gradient-warning rounded-xl p-3 flex items-center justify-between animate-pulse">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                    <span class="text-xs text-white font-semibold">Payment reminder</span>
+                                </div>
+                                <button onclick="sendWhatsAppReminder('${m.id}')" class="px-3 py-1.5 bg-white hover:bg-gray-100 text-green-600 rounded-lg text-xs font-semibold flex items-center space-x-1 transition btn-ripple shadow-lg hover-scale">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                    </svg>
+                                    <span>Send</span>
+                                </button>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex space-x-2">
+                                <button onclick="openEditModal('${m.id}')" class="px-3 py-2 glass-card text-purple-300 hover:bg-white/10 rounded-xl text-xs font-medium transition btn-ripple hover-scale border border-white/10">✏️ Edit</button>
+                                <button onclick="promptDelete('${m.id}')" class="px-3 py-2 glass-card text-rose-300 hover:bg-white/10 rounded-xl text-xs font-medium transition btn-ripple hover-scale border border-white/10">🗑️ Delete</button>
+                            </div>
+                            ${!isPaid ? `
+                                <button onclick="markAsPaid('${m.id}')" class="px-4 py-2 gradient-success text-white rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-xl hover:shadow-[0_0_30px_rgba(17,153,142,0.6)] transition btn-ripple hover-scale">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    <span>Mark Paid</span>
+                                </button>
+                            ` : `
+                                <span class="text-xs text-emerald-300 font-bold px-3 py-2 glass-card rounded-lg border border-emerald-500/20 animate-pulse">✓ Active</span>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Filter by tab
+        function filterTab(tab) {
+            currentTab = tab;
+            ['all', 'paid', 'unpaid'].forEach(t => {
+                const btn = document.getElementById('tab-' + t);
+                if (t === tab) {
+                    btn.className = 'flex-1 py-1.5 text-xs font-semibold rounded-lg transition gradient-ultra text-white shadow-lg';
+                } else {
+                    btn.className = 'flex-1 py-1.5 text-xs font-semibold rounded-lg transition text-white/60 hover:text-white hover:bg-white/10';
+                }
+            });
+            renderMembers();
+        }
+        
+        // Filter by search
+        function filterMembers(query) {
+            searchQuery = query;
+            renderMembers();
+        }
+        
+        // Open add modal
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Add Member';
+            document.getElementById('memberId').value = '';
+            document.getElementById('memberName').value = '';
+            document.getElementById('memberFatherName').value = '';
+            document.getElementById('memberJoiningDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('memberFee').value = '1500';
+            document.getElementById('memberStatus').value = 'paid';
+            document.getElementById('memberModal').classList.remove('hidden');
+            document.getElementById('memberModal').classList.add('flex');
+        }
+        
+        // Open edit modal
+        function openEditModal(id) {
+            const member = members.find(m => m.id === id);
+            if (!member) return;
+            
+            document.getElementById('modalTitle').textContent = 'Edit Member';
+            document.getElementById('memberId').value = member.id;
+            document.getElementById('memberName').value = member.name;
+            document.getElementById('memberFatherName').value = member.fatherName;
+            document.getElementById('memberWhatsApp').value = member.whatsApp || '';
+            document.getElementById('memberJoiningDate').value = member.joiningDate;
+            document.getElementById('memberFee').value = member.monthlyFee;
+            document.getElementById('memberStatus').value = member.status;
+            document.getElementById('memberModal').classList.remove('hidden');
+            document.getElementById('memberModal').classList.add('flex');
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('memberModal').classList.add('hidden');
+            document.getElementById('memberModal').classList.remove('flex');
+        }
+        
+        // Save member (add or edit)
+        async function saveMember(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('memberId').value;
+            const name = document.getElementById('memberName').value.trim();
+            const fatherName = document.getElementById('memberFatherName').value.trim();
+            const whatsApp = document.getElementById('memberWhatsApp').value.trim();
+            const joiningDate = document.getElementById('memberJoiningDate').value;
+            const monthlyFee = parseFloat(document.getElementById('memberFee').value);
+            const status = document.getElementById('memberStatus').value;
+            
+            const todayStr = new Date().toISOString().split('T')[0];
+            const lastPayment = status === 'paid' ? todayStr : joiningDate;
+            const nextDueDate = calculateNextMonth(lastPayment);
+            
+            const memberData = {
+                name,
+                fatherName,
+                whatsApp: whatsApp || null,
+                joiningDate,
+                monthlyFee,
+                status,
+                lastPayment,
+                nextDueDate,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            try {
+                if (id) {
+                    await db.collection('members').doc(id).update(memberData);
+                    showToast('Member updated!', 'success');
+                } else {
+                    memberData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('members').add(memberData);
+                    showToast('Member added!', 'success');
+                }
+                closeModal();
+            } catch (error) {
+                console.error('Error saving member:', error);
+                showToast('Error saving member', 'error');
+            }
+        }
+        
+        // Mark as paid
+        async function markAsPaid(id) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const nextDueDate = calculateNextMonth(todayStr);
+            
+            try {
+                await db.collection('members').doc(id).update({
+                    status: 'paid',
+                    lastPayment: todayStr,
+                    nextDueDate: nextDueDate,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showToast('Payment recorded!', 'success');
+            } catch (error) {
+                console.error('Error marking as paid:', error);
+                showToast('Error updating payment', 'error');
+            }
+        }
+        
+        // Prompt delete
+        function promptDelete(id) {
+            deleteTargetId = id;
+            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmModal').classList.add('flex');
+            document.getElementById('confirmDeleteBtn').onclick = () => confirmDelete(id);
+        }
+        
+        // Close confirm modal
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+            deleteTargetId = null;
+        }
+        
+        // Confirm delete
+        async function confirmDelete(id) {
+            try {
+                await db.collection('members').doc(id).delete();
+                showToast('Member deleted', 'info');
+                closeConfirmModal();
+            } catch (error) {
+                console.error('Error deleting member:', error);
+                showToast('Error deleting member', 'error');
+            }
+        }
+        
+        // Show toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-2xl backdrop-blur-sm border border-white/20 ${
+                type === 'success' ? 'gradient-success text-white' :
+                type === 'error' ? 'gradient-danger text-white' :
+                'glass-ultra text-white'
+            }`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2500);
+        }
+        
+        // Send WhatsApp reminder
+        function sendWhatsAppReminder(memberId) {
+            const member = members.find(m => m.id === memberId);
+            if (!member || !member.whatsApp) {
+                showToast('WhatsApp number not available', 'error');
+                return;
+            }
+            
+            // Format WhatsApp number (remove spaces, dashes, etc.)
+            let phoneNumber = member.whatsApp.replace(/\D/g, '');
+            
+            // Add country code if not present (assuming Pakistan +92)
+            if (!phoneNumber.startsWith('92')) {
+                if (phoneNumber.startsWith('0')) {
+                    phoneNumber = '92' + phoneNumber.substring(1);
+                } else {
+                    phoneNumber = '92' + phoneNumber;
+                }
+            }
+            
+            // Calculate days overdue
+            let daysText = '';
+            if (member.nextDueDate) {
+                const today = new Date();
+                const dueDate = new Date(member.nextDueDate);
+                const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                if (daysOverdue > 0) {
+                    daysText = ` Your payment is ${daysOverdue} day${daysOverdue > 1 ? 's' : ''} overdue.`;
+                }
+            }
+            
+            // Create personalized message
+            const message = `السلام علیکم ${member.name} صاحب!
+
+یہ Haseeb Fitness کی طرف سے payment reminder ہے۔
+
+Monthly Fee: Rs. ${member.monthlyFee.toLocaleString()}
+Due Date: ${member.nextDueDate}${daysText}
+
+براہ کرم جلد از جلد payment جمع کروائیں۔
+
+شکریہ! 💪`;
+
+            // Encode message for URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Open WhatsApp with the message
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            
+            // Open in new window
+            window.open(whatsappUrl, '_blank');
+            
+            showToast('Opening WhatsApp...', 'success');
+        }
+        
+        // Handle logout
+        async function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    await auth.signOut();
+                    console.log('✅ Logged out successfully');
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    alert('Error logging out: ' + error.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "haseeb-fitness-crm",
+  "version": "1.0.0",
+  "description": "Ultra Premium CRM & Cashier System for Haseeb Fitness",
+  "main": "index.html",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "node build.js && npx serve dist",
+    "deploy": "node build.js"
+  },
+  "keywords": [
+    "crm",
+    "fitness",
+    "firebase",
+    "cashier"
+  ],
+  "author": "Haseeb Fitness",
+  "license": "MIT"
+}
