@@ -142,27 +142,27 @@
         /* Ultra Premium Gradients */
         .gradient-ultra {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
         }
         
         .gradient-success {
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
         }
         
         .gradient-danger {
             background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
-            box-shadow: 0 10px 30px rgba(238, 9, 121, 0.4);
+            box-shadow: 0 4px 15px rgba(238, 9, 121, 0.3);
         }
         
         .gradient-warning {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.4);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
         }
         
         .gradient-gold {
             background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
-            box-shadow: 0 10px 30px rgba(247, 151, 30, 0.4);
+            box-shadow: 0 4px 15px rgba(247, 151, 30, 0.3);
         }
         
         /* Premium Text Gradients */
@@ -207,12 +207,10 @@
         
         @keyframes glow {
             0%, 100% { 
-                box-shadow: 0 0 30px rgba(102, 126, 234, 0.5),
-                           0 0 60px rgba(118, 75, 162, 0.3); 
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
             }
             50% { 
-                box-shadow: 0 0 50px rgba(102, 126, 234, 0.8),
-                           0 0 100px rgba(118, 75, 162, 0.5); 
+                box-shadow: 0 4px 30px rgba(102, 126, 234, 0.4);
             }
         }
         
@@ -273,19 +271,16 @@
         
         /* Premium Hover Effects */
         .hover-scale {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
         }
         
         .hover-scale:hover {
-            transform: scale(1.05) translateY(-5px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
         
         .hover-glow:hover {
-            box-shadow: 
-                0 0 30px rgba(102, 126, 234, 0.6),
-                0 0 60px rgba(118, 75, 162, 0.4),
-                0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
         }
         
         /* Button Ripple Effect */
@@ -318,21 +313,16 @@
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px;
+            border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
         }
         
         .ultra-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(102, 126, 234, 0.3);
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.6),
-                0 0 40px rgba(102, 126, 234, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            border-color: rgba(102, 126, 234, 0.2);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
         }
         
         /* Clean Text - No Neon */
@@ -364,18 +354,12 @@
         /* Status Badge Glow */
         .badge-glow-paid {
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            box-shadow: 
-                0 0 20px rgba(56, 239, 125, 0.5),
-                0 4px 15px rgba(17, 153, 142, 0.3);
-            animation: pulse 3s ease-in-out infinite;
+            box-shadow: 0 2px 10px rgba(56, 239, 125, 0.3);
         }
         
         .badge-glow-unpaid {
             background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
-            box-shadow: 
-                0 0 20px rgba(238, 9, 121, 0.5),
-                0 4px 15px rgba(255, 106, 0, 0.3);
-            animation: pulse 3s ease-in-out infinite;
+            box-shadow: 0 2px 10px rgba(238, 9, 121, 0.3);
         }
         
         /* Loading Skeleton */
@@ -421,7 +405,7 @@
         <!-- Loading state -->
         <div class="flex items-center justify-center min-h-screen">
             <div class="text-center space-y-4">
-                <div class="w-16 h-16 gradient-ultra text-white rounded-3xl flex items-center justify-center mx-auto shadow-2xl animate-glow">
+                <div class="w-16 h-16 gradient-ultra text-white rounded-3xl flex items-center justify-center mx-auto shadow-xl">
                     <span class="text-2xl font-bold">HF</span>
                 </div>
                 <div class="space-y-2">
@@ -462,7 +446,7 @@
                                 <div class="absolute top-0 left-0 w-full h-full opacity-20">
                                     <div class="shimmer w-full h-full"></div>
                                 </div>
-                                <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg animate-glow relative z-10">
+                                <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg relative z-10">
                                     <span class="text-4xl font-bold text-white">HF</span>
                                 </div>
                                 <h1 class="text-3xl font-bold text-white mb-2 relative z-10">Haseeb Fitness</h1>
@@ -477,17 +461,17 @@
                                     <div class="group">
                                         <label class="block text-xs font-semibold text-white/90 uppercase mb-2 group-focus-within:text-white transition">Email</label>
                                         <input type="email" id="email" required placeholder="admin@haseebfitness.com"
-                                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm">
                                     </div>
                                     
                                     <div class="group">
                                         <label class="block text-xs font-semibold text-white/90 uppercase mb-2 group-focus-within:text-white transition">Password</label>
                                         <input type="password" id="password" required placeholder="••••••••"
-                                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm">
                                     </div>
                                     
                                     <button type="submit" id="login-btn"
-                                        class="w-full py-4 gradient-ultra text-white rounded-2xl font-bold transition mt-6 btn-ripple shadow-2xl hover-scale animate-glow">
+                                        class="w-full py-4 gradient-ultra text-white rounded-2xl font-bold transition mt-6 btn-ripple shadow-xl hover:shadow-2xl active:scale-95">
                                         <span id="login-text">🔐 Sign In Securely</span>
                                         <span id="login-spinner" class="hidden">⏳ Authenticating...</span>
                                     </button>
@@ -567,7 +551,7 @@
                     <header class="glass-card border-b border-white/10 px-5 py-4 sticky top-0 z-20 backdrop-blur-xl">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 rounded-2xl gradient-ultra flex items-center justify-center font-bold text-lg shadow-xl animate-glow">
+                                <div class="w-10 h-10 rounded-2xl gradient-ultra flex items-center justify-center font-bold text-lg shadow-lg">
                                     <span class="text-white">HF</span>
                                 </div>
                                 <div>
@@ -612,7 +596,7 @@
                             </div>
                             <input type="text" id="searchInput" placeholder="🔍 Search by name..." 
                                 oninput="filterMembers(this.value)"
-                                class="w-full pl-10 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                class="w-full pl-10 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm">
                         </div>
                         
                         <div class="flex p-1 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
@@ -631,7 +615,7 @@
                     <main class="flex-1 px-5 py-4 overflow-y-auto space-y-3 pb-24" id="member-list"></main>
 
                     <div class="absolute bottom-5 right-5 z-10 animate-float">
-                        <button onclick="openAddModal()" class="flex items-center space-x-2 gradient-ultra text-white px-5 py-3.5 rounded-2xl shadow-2xl font-semibold text-sm hover:shadow-[0_0_50px_rgba(102,126,234,0.8)] active:scale-95 transition btn-ripple animate-glow">
+                        <button onclick="openAddModal()" class="flex items-center space-x-2 gradient-ultra text-white px-5 py-3.5 rounded-2xl shadow-xl font-semibold text-sm hover:shadow-2xl active:scale-95 transition btn-ripple">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                             <span>Add Member</span>
                         </button>
@@ -651,37 +635,37 @@
                                 <div>
                                     <label class="block text-xs font-semibold text-white/90 uppercase mb-1">Full Name *</label>
                                     <input type="text" id="memberName" required placeholder="e.g. Ali Ahmad"
-                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-white/90 uppercase mb-1">Father Name *</label>
                                     <input type="text" id="memberFatherName" required placeholder="e.g. Ahmad Khan"
-                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-white/90 uppercase mb-1">📱 WhatsApp Number</label>
                                     <input type="tel" id="memberWhatsApp" placeholder="e.g. 03001234567"
-                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm">
                                     <p class="text-xs text-white/50 mt-1">Optional - For payment reminders</p>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-white/90 uppercase mb-1">Joining Date *</label>
                                     <input type="date" id="memberJoiningDate" required
-                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-white/90 uppercase mb-1">💰 Monthly Fee (PKR) *</label>
                                     <input type="number" id="memberFee" required min="1" placeholder="1500" value="1500"
-                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                        class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-white/90 uppercase mb-1">Status</label>
-                                    <select id="memberStatus" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm hover-glow">
+                                    <select id="memberStatus" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:bg-white/10 focus:border-purple-400 transition backdrop-blur-sm">
                                         <option value="paid" class="bg-gray-900">✓ Paid</option>
                                         <option value="unpaid" class="bg-gray-900">⏰ Unpaid</option>
                                     </select>
                                 </div>
-                                <button type="submit" class="w-full py-3.5 gradient-ultra text-white rounded-2xl font-bold hover:shadow-2xl transition btn-ripple animate-glow">
+                                <button type="submit" class="w-full py-3.5 gradient-ultra text-white rounded-2xl font-bold hover:shadow-xl transition btn-ripple active:scale-95">
                                     💾 Save Member
                                 </button>
                             </form>
@@ -812,7 +796,7 @@
                     <div class="ultra-card p-4 space-y-3 hover-scale animate-fade-in">
                         <div class="flex items-start justify-between">
                             <div class="flex items-center space-x-3">
-                                <div class="w-11 h-11 rounded-xl gradient-ultra flex items-center justify-center text-sm text-white font-bold shadow-xl animate-glow">
+                                <div class="w-11 h-11 rounded-xl gradient-ultra flex items-center justify-center text-sm text-white font-bold shadow-lg">
                                     ${initials}
                                 </div>
                                 <div>
@@ -864,12 +848,12 @@
                                 <button onclick="promptDelete('${m.id}')" class="px-3 py-2 glass-card text-rose-300 hover:bg-white/10 rounded-xl text-xs font-medium transition btn-ripple hover-scale border border-white/10">🗑️ Delete</button>
                             </div>
                             ${!isPaid ? `
-                                <button onclick="markAsPaid('${m.id}')" class="px-4 py-2 gradient-success text-white rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-xl hover:shadow-[0_0_30px_rgba(17,153,142,0.6)] transition btn-ripple hover-scale">
+                                <button onclick="markAsPaid('${m.id}')" class="px-4 py-2 gradient-success text-white rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-lg hover:shadow-xl transition btn-ripple hover-scale">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                     <span>Mark Paid</span>
                                 </button>
                             ` : `
-                                <span class="text-xs text-emerald-300 font-bold px-3 py-2 glass-card rounded-lg border border-emerald-500/20 animate-pulse">✓ Active</span>
+                                <span class="text-xs text-emerald-300 font-bold px-3 py-2 glass-card rounded-lg border border-emerald-500/20">✓ Active</span>
                             `}
                         </div>
                     </div>
